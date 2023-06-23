@@ -12,6 +12,10 @@
     "node": ">=18.12.0"
   },
   "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "^5.0.1",
+    "@mapbox/tile-cover": "^3.0.2",
+    "@mapbox/tilebelt": "^1.0.2",
+    "@types/mapbox-gl": "^2.7.11",
     "@types/node": "20.3.1",
     "@types/react": "18.2.13",
     "@types/react-dom": "18.2.6",
@@ -19,6 +23,7 @@
     "clsx": "^1.2.1",
     "eslint": "8.43.0",
     "eslint-config-next": "13.4.7",
+    "mapbox-gl": "^2.15.0",
     "next": "13.4.7",
     "postcss": "8.4.24",
     "react": "18.2.0",
