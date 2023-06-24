@@ -375,10 +375,32 @@
   dependencies:
     "@types/node" "*"
 
-"@types/mapbox-gl@^2.7.11":
+"@types/mapbox-gl@*", "@types/mapbox-gl@^2.7.11":
   version "2.7.11"
   resolved "https://registry.yarnpkg.com/@types/mapbox-gl/-/mapbox-gl-2.7.11.tgz#c9b9ed2ed24970aeef947609fdfcfcf826a3aa49"
   integrity sha512-4vSwPSTQIawZTFRiTY2R74aZwAiM9gE6KGj871xdyAPpa+DmEObXxQQXqL2PsMH31/rP9nxJ2Kv0boeTVJMXVw==
+  dependencies:
+    "@types/geojson" "*"
+
+"@types/mapbox__mapbox-gl-geocoder@^4.7.3":
+  version "4.7.3"
+  resolved "https://registry.yarnpkg.com/@types/mapbox__mapbox-gl-geocoder/-/mapbox__mapbox-gl-geocoder-4.7.3.tgz#98891cb6e342613e8d20833b6890e15fd447b847"
+  integrity sha512-zGVxbyEnJnVc37KpgCDRh1nTvVwVNTcqIDFgE5aETD2iOGDVVZpVDJRE3TUrTjdHxaq89767U8kxGcc8Pnv/ag==
+  dependencies:
+    "@types/geojson" "*"
+    "@types/mapbox-gl" "*"
+
+"@types/mapbox__tile-cover@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/mapbox__tile-cover/-/mapbox__tile-cover-3.0.1.tgz#4f40fe6884928bdbfc08676cdbe56d8564a05e93"
+  integrity sha512-wb78ItrCf25P2qF1L/tRbhQ2bMi+Ko+jJ6UfTUpuQSXagm+IVQdJ7M1W3CzsJoqzJ53jEYvX8nV27QJVVDRB6g==
+  dependencies:
+    "@types/geojson" "*"
+
+"@types/mapbox__tilebelt@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/mapbox__tilebelt/-/mapbox__tilebelt-1.0.0.tgz#89329e7c477263b046eddd91246ef8a0096e34d0"
+  integrity sha512-g6AmvxPWl+Yt7EV3XxHCSDT1551fF7ZaHCLlfZuItZGPMMbjVvZ0jKIeeUYTrbReBO1YvruOhs2u4iLGcb6mBA==
   dependencies:
     "@types/geojson" "*"
 
@@ -2140,6 +2162,16 @@ map-obj@^4.0.0:
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-4.3.0.tgz#9304f906e93faae70880da102a9f1df0ea8bb05a"
   integrity sha512-hdN1wVrZbb29eBGiGjJbeP8JbKjq1urkHJ/LIP/NY48MZ1QVXUsQBV1G1zvYFHn1XE06cwjBsOI2K3Ulnj1YXQ==
 
+mapbox-gl-geocoder@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/mapbox-gl-geocoder/-/mapbox-gl-geocoder-2.0.1.tgz#4776f9c5fd770e756006a5ac1849e529a8d1de94"
+  integrity sha512-t/abpDTvi4doMt5fmDb9gGdP7ajuC787SglSJpfse0IjiLjW7a2KwUu0aSlr3vZaamMRsrxxuVVpEOCSpTPTpQ==
+  dependencies:
+    lodash.debounce "^4.0.6"
+    mapbox "1.0.0-beta5"
+    suggestions "^1.3.1"
+    xtend "^4.0.1"
+
 mapbox-gl@^2.15.0:
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-2.15.0.tgz#9439828d0bae1e7b464ae08b30cb2e65a7e2256d"
@@ -2167,6 +2199,13 @@ mapbox-gl@^2.15.0:
     supercluster "^8.0.0"
     tinyqueue "^2.0.3"
     vt-pbf "^3.1.3"
+
+mapbox@1.0.0-beta5:
+  version "1.0.0-beta5"
+  resolved "https://registry.yarnpkg.com/mapbox/-/mapbox-1.0.0-beta5.tgz#6342f98df74464fdca007bf19e58ec24133f0d66"
+  integrity sha512-6+0SClemYucqPYsXdjEZSnHVXxqn8GSdbHmswiSIhEcdb+7ZJQjgAsDZHxm/ZhmbHr6w4z6leCDc4xH5jw8tCA==
+  dependencies:
+    rest "^2.0.0"
 
 meow@^6.1.1:
   version "6.1.1"
@@ -2683,6 +2722,11 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.0.tgz#f67fa67c94da8f4d0cfff981aee4118064199b8f"
   integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
 
+quadkey-tilemath@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/quadkey-tilemath/-/quadkey-tilemath-0.0.6.tgz#4a6fc0d60937fe79275a02a3d56aba718361cbee"
+  integrity sha512-KzQmV0spx568VSlsf46jxi2LqSMfY3iUZnjYNWzRNJZnliWedywlTNTKo0rqa+luy1vkiwRaAplrST5GLmUGog==
+
 queue-microtask@^1.2.2:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
@@ -2829,6 +2873,11 @@ responselike@^2.0.0:
   integrity sha512-4gl03wn3hj1HP3yzgdI7d3lCkF95F21Pz4BPGvKHinyQzALR5CapwC8yIi0Rh58DEMQ/SguC03wFj2k0M/mHhw==
   dependencies:
     lowercase-keys "^2.0.0"
+
+rest@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/rest/-/rest-2.0.0.tgz#6dfadf66a405c49cfbd5b4bd25b59fd29cd861bc"
+  integrity sha512-MmTKuTuLVARHNnpL1jJjohscJcY3vsaKNz+b2J5v32BcjIVyimKrNv8r8uygeFp9gf8Cm1erhxypdzRFFEPZOA==
 
 reusify@^1.0.4:
   version "1.0.4"
@@ -3066,7 +3115,7 @@ sucrase@^3.32.0:
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
 
-suggestions@^1.6.0:
+suggestions@^1.3.1, suggestions@^1.6.0:
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/suggestions/-/suggestions-1.7.1.tgz#2fefcbde8967353056d1d6eaed891b46d98a7e5c"
   integrity sha512-gl5YPAhPYl07JZ5obiD9nTZsg4SyZswAQU/NNtnYiSnFkI3+ZHuXAiEsYm7AaZ71E0LXSFaGVaulGSWN3Gd71A==
