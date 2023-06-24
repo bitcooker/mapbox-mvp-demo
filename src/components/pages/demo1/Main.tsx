@@ -66,7 +66,7 @@ const Main: React.FC = () => {
         'line-color': [
           'case',
           ['get', 'isQuadKey'],
-          'rgba(0, 0, 0,0.1)',
+          ['get', 'lineColor'],
           'rgba(0, 0, 0,0)',
         ],
       },
@@ -80,7 +80,7 @@ const Main: React.FC = () => {
         'fill-color': [
           'case',
           ['get', 'isQuadKey'],
-          'rgba(0, 136, 255,0.7)',
+          ['get', 'fillColor'],
           'rgba(0,0,0,0)',
         ],
       },
@@ -207,12 +207,17 @@ const Main: React.FC = () => {
 
     function getTileFeature(tile: number[]) {
       const quadkey = tilebelt.tileToQuadkey(tile);
-
       const feature = {
         type: 'Feature',
         properties: {
           isQuadKey: data[quadkey] != null,
           quadkey: quadkey,
+          lineColor: 'rgba(0, 0, 0,0.1)',
+          fillColor: data[quadkey]
+            ? data[quadkey].color == 'red'
+              ? 'rgba(255, 87, 87,0.7)'
+              : 'rgba(0, 136, 255,0.7)'
+            : 'rgba(0, 0, 0,0)',
         },
         geometry: tilebelt.tileToGeoJSON(tile),
       };
