@@ -12,7 +12,7 @@ const FillButton: React.FC<IProps> = ({ className, onClick, children }) => {
     <div
       className={clsx(
         className,
-        'px-3 py-1 transition-all bg-white rounded-full cursor-pointer hover:bg-gray-100 active:bg-gray-200'
+        'flex items-center justify-center py-1 px-2 transition-all bg-white rounded-full cursor-pointer hover:bg-gray-100 active:bg-gray-200'
       )}
       onClick={onClick}
     >
