@@ -1,19 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { GeoJSONSource, Map } from 'mapbox-gl';
+import React, { useState } from 'react';
+import { LngLatLike, Map } from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-import * as tc from '@mapbox/tile-cover';
-import * as tilebelt from '@mapbox/tilebelt';
-import tileMath from 'quadkey-tilemath';
 import { SixDotsScaleMiddle } from 'react-svg-spinners';
 import MapboxMap from '@/components/common/map/mapbox_map';
 import SearchBox from '@/components/common/searchbox/SearchBox';
 
 const MainMap: React.FC = () => {
   const [map, setMap] = useState<Map>();
-  const [geocoder, setGeoCoder] = useState<MapboxGeocoder>();
   const [isMapLoading, setIsMapLoading] = useState(true);
+
+  const flyTo = (center: LngLatLike) => {
+    map?.flyTo({ zoom: 15, center });
+  };
 
   const handleOnMapLoaded = (_map: Map) => {
     setIsMapLoading(false);
@@ -23,7 +23,6 @@ const MainMap: React.FC = () => {
       accessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string,
     });
     map?.addControl(_geocoder);
-    setGeoCoder(_geocoder);
   };
 
   return (
@@ -34,7 +33,7 @@ const MainMap: React.FC = () => {
         </div>
       )}
       <MapboxMap onMapLoaded={handleOnMapLoaded} />
-      <SearchBox />
+      <SearchBox flyTo={flyTo} />
     </div>
   );
 };
