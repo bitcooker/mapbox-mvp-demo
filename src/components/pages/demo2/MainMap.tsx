@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { GeoJSONSource, LngLat, Map } from 'mapbox-gl';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { GeoJSONSource, LngLat, Map, MapboxGeoJSONFeature } from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import * as tc from '@mapbox/tile-cover';
 import * as tilebelt from '@mapbox/tilebelt';
@@ -13,12 +13,16 @@ import SearchBox from '@/components/common/searchbox/SearchBox';
 
 const MainMap: React.FC = () => {
   const [map, setMap] = useState<Map>();
-  const [takenQuadkeys, setTakenQuadkeys] = useState<string[]>();
+  const [takenFeatures, setTakenFeatures] = useState<MapboxGeoJSONFeature[]>(
+    []
+  );
+  const takenFeaturesRef = useRef<MapboxGeoJSONFeature[]>([]);
   const [cursorQuadkey, setCursorQuadkey] = useState('');
+  const cursorQuadkeyRef = useRef('');
   const [isMapLoading, setIsMapLoading] = useState(true);
 
   const flyTo = (center: LngLat) => {
-    map?.flyTo({ zoom: 10, center });
+    map?.flyTo({ zoom: 11, center });
   };
 
   const handleOnMapLoaded = (_map: Map) => {
@@ -90,21 +94,83 @@ const MainMap: React.FC = () => {
       minzoom: 10,
     });
 
+    // Mouse Click QuadKeys
+    _map.addSource('tiles-selected-geojson', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [],
+      },
+    });
+
+    _map.addLayer({
+      id: 'tiles-selected',
+      source: 'tiles-selected-geojson',
+      type: 'line',
+      paint: {
+        'line-color': 'rgba(255,255,0,1)',
+        'line-width': 1,
+      },
+      minzoom: 10,
+    });
+
+    _map.addLayer({
+      id: 'tiles-selected-shade',
+      source: 'tiles-selected-geojson',
+      type: 'fill',
+      paint: {
+        'fill-color': 'rgba(255,255,0,0.7)',
+      },
+      minzoom: 10,
+    });
+
     _map.on('mousemove', (e) => {
-      if (_map.getZoom() > 10) {
+      if (_map.getZoom() > 9) {
         const _features = _map.queryRenderedFeatures(e.point, {
           layers: ['tiles-shade'],
         });
-
         try {
-          if (_features[0].properties!.quadkey != cursorQuadkey) {
-            setCursorQuadkey(_features[0].properties!.quadkey);
+          if (_features[0].properties!.quadkey != cursorQuadkeyRef.current) {
+            cursorQuadkeyRef.current = _features[0].properties!.quadkey;
+            setCursorQuadkey(cursorQuadkeyRef.current);
             (_map.getSource('tiles-over-geojson') as GeoJSONSource).setData({
               type: 'FeatureCollection',
               features: [_features[0]],
             });
           }
         } catch {}
+      }
+    });
+
+    _map.on('click', (e) => {
+      if (_map.getZoom() > 9) {
+        const _features = _map.queryRenderedFeatures(e.point, {
+          layers: ['tiles-shade'],
+        });
+
+        if (e.originalEvent.ctrlKey) {
+          const filteredFeatures: MapboxGeoJSONFeature[] = [];
+          takenFeaturesRef.current.forEach((_takenFeature) => {
+            if (
+              _features[0].properties!.quadkey !=
+              _takenFeature.properties!.quadkey
+            ) {
+              filteredFeatures.push(_takenFeature);
+            }
+          });
+          if (filteredFeatures.length == takenFeaturesRef.current.length) {
+            filteredFeatures.push(_features[0]);
+          }
+          takenFeaturesRef.current = filteredFeatures;
+          setTakenFeatures(takenFeaturesRef.current);
+        } else {
+          takenFeaturesRef.current = _features;
+        }
+
+        (_map.getSource('tiles-selected-geojson') as GeoJSONSource).setData({
+          type: 'FeatureCollection',
+          features: takenFeaturesRef.current,
+        });
       }
     });
 
