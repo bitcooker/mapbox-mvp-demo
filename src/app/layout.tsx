@@ -1,6 +1,7 @@
 import React from 'react';
 import './globals.css';
 import Header from '@/components/layout/Header';
+import { AuthProvider } from '@/libs/firebase/auth';
 
 export const metadata = {
   title: 'MapBox MVP',
@@ -15,8 +16,10 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className='flex flex-col min-h-[100vh]'>
-        <Header />
-        {children}
+        <AuthProvider>
+          <Header />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
