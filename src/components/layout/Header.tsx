@@ -73,7 +73,7 @@ const Profile: React.FC = () => {
       {isMenuOpen && (
         <div
           ref={profileMenuRef}
-          className='absolute bottom-0 right-0 py-2 bg-white drop-shadow-sm border rounded-md translate-y-[100%] w-48 mr-1'
+          className='absolute -bottom-2 right-0 py-2 bg-white drop-shadow-sm border rounded-md translate-y-[100%] w-48 mr-1'
         >
           <FillButton className='rounded-none' onClick={handleAuthButtonClick}>
             {user ? 'Logout' : 'Login'}
