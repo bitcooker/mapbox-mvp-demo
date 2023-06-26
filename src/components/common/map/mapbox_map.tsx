@@ -27,7 +27,6 @@ const MapboxMap: React.FC<IProps> = ({
       center: [-74.5, 40],
       zoom: 3,
       minZoom: 2,
-      maxZoom: 10,
       ...initialOptions,
     });
 
