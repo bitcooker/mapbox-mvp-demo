@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GeoJSONSource, LngLat, Map, MapboxGeoJSONFeature } from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import * as tc from '@mapbox/tile-cover';
 import * as tilebelt from '@mapbox/tilebelt';
 import tileMath from 'quadkey-tilemath';
 import { SixDotsScaleMiddle } from 'react-svg-spinners';
-import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import MapboxMap from '@/components/common/map/mapbox_map';
 import SearchBox from '@/components/common/searchbox/SearchBox';
 
@@ -27,7 +26,6 @@ const MainMap: React.FC<IProps> = ({
 }) => {
   const [map, setMap] = useState<Map | null>(null);
   const takenFeaturesRef = useRef<MapboxGeoJSONFeature[]>([]);
-  const [cursorQuadkey, setCursorQuadkey] = useState('');
   const cursorQuadkeyRef = useRef('');
   const [isMapLoading, setIsMapLoading] = useState(true);
 
@@ -285,7 +283,6 @@ const MainMap: React.FC<IProps> = ({
             ) {
               cursorQuadkeyRef.current =
                 _propertyFeatures[0].properties!.quadkey;
-              setCursorQuadkey(cursorQuadkeyRef.current);
               (_map.getSource('tiles-over-geojson') as GeoJSONSource).setData({
                 type: 'FeatureCollection',
                 features: [_propertyFeatures[0]],
@@ -303,7 +300,6 @@ const MainMap: React.FC<IProps> = ({
             ) {
               cursorQuadkeyRef.current =
                 _availableFeatures[0].properties!.quadkey;
-              setCursorQuadkey(cursorQuadkeyRef.current);
               (_map.getSource('tiles-over-geojson') as GeoJSONSource).setData({
                 type: 'FeatureCollection',
                 features: [_availableFeatures[0]],

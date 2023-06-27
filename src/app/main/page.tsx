@@ -3,17 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { SnackbarProvider } from 'notistack';
 import { LngLat, MapboxGeoJSONFeature } from 'mapbox-gl';
-import {
-  query,
-  collection,
-  onSnapshot,
-  QuerySnapshot,
-  getDocs,
-} from 'firebase/firestore';
+import { query, collection, onSnapshot, getDocs } from 'firebase/firestore';
 import { db } from '@/libs/firebase/firebase';
 import { OneEightyRing } from 'react-svg-spinners';
 import { SketchPicker, Color, ColorResult } from 'react-color';
-import * as tc from '@mapbox/tile-cover';
 import * as tilebelt from '@mapbox/tilebelt';
 import tileMath from 'quadkey-tilemath';
 import dayjs from 'dayjs';
@@ -22,7 +15,7 @@ import { signInWithGoogleHandler } from '@/libs/firebase/authentication';
 import Property from '@/models/Property';
 import { submitProperty } from '@/libs/firebase/property.firestore';
 import { getFeaturesFromCoords } from '@/libs/api/mapbox';
-import MainMap from '@/components/pages/demo2/MainMap';
+import MainMap from '@/components/pages/main/MainMap';
 import OutlineButton from '@/components/common/button/OutlineButton';
 import FillButton from '@/components/common/button/FillButton';
 
