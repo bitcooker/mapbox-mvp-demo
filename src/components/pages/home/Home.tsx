@@ -17,8 +17,7 @@ const Home: React.FC = () => {
         </div>
       </div>
       <div className='flex flex-col mt-1'>
-        <MenuLink href='/demo1'>Demo 1</MenuLink>
-        <MenuLink href='/demo2'>Demo 2</MenuLink>
+        <MenuLink href='/main'>Start</MenuLink>
       </div>
     </div>
   );

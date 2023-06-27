@@ -14,7 +14,7 @@ const MenuLink: React.FC<IProps> = ({ className, href, children }) => {
       href={href}
       className={clsx(
         className,
-        'bg-gray-800 text-white text-base font-semibold py-2 px-4 m-2 hover:bg-gray-600 rounded-lg'
+        'bg-gray-600 text-white text-lg font-semibold py-2 px-10 drop-shadow-md hover:drop-shadow-2xl transition-all m-2 border rounded-full'
       )}
     >
       {children}

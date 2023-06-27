@@ -26,7 +26,7 @@ import MainMap from '@/components/pages/demo2/MainMap';
 import OutlineButton from '@/components/common/button/OutlineButton';
 import FillButton from '@/components/common/button/FillButton';
 
-export default function Demo2Page() {
+export default function MainPage() {
   const [selectedFeatures, setSelectedFeatures] = useState<
     MapboxGeoJSONFeature[]
   >([]);
@@ -193,7 +193,11 @@ export default function Demo2Page() {
       <div className='flex justify-between h-full m-3'>
         <div className='z-30 w-[30%] flex flex-col h-full bg-white border rounded-lg drop-shadow-md p-2'>
           <div className='p-1'>
-            <h1 className='text-xl font-semibold'>Control Panel</h1>
+            <h1 className='text-xl font-semibold'>
+              {panelMode == 'EDIT_MODE'
+                ? 'Buy This Area'
+                : 'Property Information'}
+            </h1>
             <div className='h-[1px] bg-gray-200 my-2'></div>
           </div>
           <div className='flex flex-col h-full p-1'>
