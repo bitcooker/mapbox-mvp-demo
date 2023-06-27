@@ -11,24 +11,47 @@ import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import MapboxMap from '@/components/common/map/mapbox_map';
 import SearchBox from '@/components/common/searchbox/SearchBox';
 
-const MainMap: React.FC = () => {
-  const [map, setMap] = useState<Map>();
-  const [takenFeatures, setTakenFeatures] = useState<MapboxGeoJSONFeature[]>(
-    []
-  );
+interface IProps {
+  onSelectedFeaturesChanged(selectedFeatures: MapboxGeoJSONFeature[]): void;
+  selectedFeatures: MapboxGeoJSONFeature[];
+  propertyFeatures: GeoJSON.FeatureCollection;
+  propertyQuadkeys: string[];
+}
+const MainMap: React.FC<IProps> = ({
+  onSelectedFeaturesChanged,
+  selectedFeatures,
+  propertyFeatures,
+  propertyQuadkeys,
+}) => {
+  const [map, setMap] = useState<Map | null>(null);
   const takenFeaturesRef = useRef<MapboxGeoJSONFeature[]>([]);
   const [cursorQuadkey, setCursorQuadkey] = useState('');
   const cursorQuadkeyRef = useRef('');
   const [isMapLoading, setIsMapLoading] = useState(true);
+
+  useEffect(() => {
+    if (map != null) {
+      (map?.getSource('tiles-selected-geojson') as GeoJSONSource).setData({
+        type: 'FeatureCollection',
+        features: selectedFeatures,
+      });
+    }
+  }, [selectedFeatures]);
+
+  useEffect(() => {
+    if (map != null) {
+      (map?.getSource('tiles-properties-geojson') as GeoJSONSource).setData({
+        type: 'FeatureCollection',
+        features: propertyFeatures.features,
+      });
+    }
+  }, [propertyFeatures]);
 
   const flyTo = (center: LngLat) => {
     map?.flyTo({ zoom: 11, center });
   };
 
   const handleOnMapLoaded = (_map: Map) => {
-    setIsMapLoading(false);
-    setMap(_map);
-
     const _geocoder = new MapboxGeocoder({
       accessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string,
     });
@@ -78,8 +101,14 @@ const MainMap: React.FC = () => {
       source: 'tiles-over-geojson',
       type: 'line',
       paint: {
-        'line-color': 'rgba(0,255,0,1)',
+        'line-color': [
+          'case',
+          ['has', 'color'],
+          ['get', 'color'],
+          'rgb(0,255,0)',
+        ],
         'line-width': 2,
+        'line-opacity': ['case', ['has', 'color'], 1, 0.9],
       },
       minzoom: 10,
     });
@@ -89,7 +118,13 @@ const MainMap: React.FC = () => {
       source: 'tiles-over-geojson',
       type: 'fill',
       paint: {
-        'fill-color': 'rgba(0,255,0,0.1)',
+        'fill-color': [
+          'case',
+          ['has', 'color'],
+          ['get', 'color'],
+          'rgb(0,255,0)',
+        ],
+        'fill-opacity': ['case', ['has', 'color'], 0.8, 0.5],
       },
       minzoom: 10,
     });
@@ -108,8 +143,14 @@ const MainMap: React.FC = () => {
       source: 'tiles-selected-geojson',
       type: 'line',
       paint: {
-        'line-color': 'rgba(255,255,0,1)',
-        'line-width': 1,
+        'line-color': [
+          'case',
+          ['has', 'color'],
+          ['get', 'color'],
+          'rgb(255,255,0)',
+        ],
+        'line-width': 2,
+        'line-opacity': ['case', ['has', 'color'], 1, 1],
       },
       minzoom: 10,
     });
@@ -119,58 +160,128 @@ const MainMap: React.FC = () => {
       source: 'tiles-selected-geojson',
       type: 'fill',
       paint: {
-        'fill-color': 'rgba(255,255,0,0.7)',
+        'fill-color': [
+          'case',
+          ['has', 'color'],
+          ['get', 'color'],
+          'rgb(255,255,0)',
+        ],
+        'fill-opacity': ['case', ['has', 'color'], 0.9, 0.7],
       },
       minzoom: 10,
     });
 
+    // Property Quadkeys
+    _map.addSource('tiles-properties-geojson', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [],
+      },
+    });
+
+    _map.addLayer({
+      id: 'tiles-properties',
+      source: 'tiles-properties-geojson',
+      type: 'line',
+      paint: {
+        'line-color': ['get', 'color'],
+        'line-width': 1,
+        'line-opacity': 0.6,
+      },
+    });
+
+    _map.addLayer({
+      id: 'tiles-properties-shade',
+      source: 'tiles-properties-geojson',
+      type: 'fill',
+      paint: {
+        'fill-color': ['get', 'color'],
+        'fill-opacity': 0.3,
+      },
+    });
+
     _map.on('mousemove', (e) => {
       if (_map.getZoom() > 9) {
-        const _features = _map.queryRenderedFeatures(e.point, {
-          layers: ['tiles-shade'],
+        const _propertyFeatures = _map.queryRenderedFeatures(e.point, {
+          layers: ['tiles-properties-shade'],
         });
-        try {
-          if (_features[0].properties!.quadkey != cursorQuadkeyRef.current) {
-            cursorQuadkeyRef.current = _features[0].properties!.quadkey;
-            setCursorQuadkey(cursorQuadkeyRef.current);
-            (_map.getSource('tiles-over-geojson') as GeoJSONSource).setData({
-              type: 'FeatureCollection',
-              features: [_features[0]],
-            });
-          }
-        } catch {}
+        if (_propertyFeatures.length > 0) {
+          try {
+            if (
+              _propertyFeatures[0].properties!.quadkey !=
+              cursorQuadkeyRef.current
+            ) {
+              cursorQuadkeyRef.current =
+                _propertyFeatures[0].properties!.quadkey;
+              setCursorQuadkey(cursorQuadkeyRef.current);
+              (_map.getSource('tiles-over-geojson') as GeoJSONSource).setData({
+                type: 'FeatureCollection',
+                features: [_propertyFeatures[0]],
+              });
+            }
+          } catch {}
+        } else {
+          const _availableFeatures = _map.queryRenderedFeatures(e.point, {
+            layers: ['tiles-shade'],
+          });
+          try {
+            if (
+              _availableFeatures[0].properties!.quadkey !=
+              cursorQuadkeyRef.current
+            ) {
+              cursorQuadkeyRef.current =
+                _availableFeatures[0].properties!.quadkey;
+              setCursorQuadkey(cursorQuadkeyRef.current);
+              (_map.getSource('tiles-over-geojson') as GeoJSONSource).setData({
+                type: 'FeatureCollection',
+                features: [_availableFeatures[0]],
+              });
+            }
+          } catch {}
+        }
       }
     });
 
     _map.on('click', (e) => {
       if (_map.getZoom() > 9) {
-        const _features = _map.queryRenderedFeatures(e.point, {
-          layers: ['tiles-shade'],
+        const _propertyFeatures = _map.queryRenderedFeatures(e.point, {
+          layers: ['tiles-properties-shade'],
         });
-
-        if (e.originalEvent.ctrlKey) {
-          const filteredFeatures: MapboxGeoJSONFeature[] = [];
-          takenFeaturesRef.current.forEach((_takenFeature) => {
-            if (
-              _features[0].properties!.quadkey !=
-              _takenFeature.properties!.quadkey
-            ) {
-              filteredFeatures.push(_takenFeature);
-            }
-          });
-          if (filteredFeatures.length == takenFeaturesRef.current.length) {
-            filteredFeatures.push(_features[0]);
-          }
-          takenFeaturesRef.current = filteredFeatures;
-          setTakenFeatures(takenFeaturesRef.current);
+        if (_propertyFeatures.length > 0) {
+          takenFeaturesRef.current = _propertyFeatures;
+          onSelectedFeaturesChanged(takenFeaturesRef.current);
         } else {
-          takenFeaturesRef.current = _features;
-        }
+          const _availableFeatures = _map.queryRenderedFeatures(e.point, {
+            layers: ['tiles-shade'],
+          });
 
-        (_map.getSource('tiles-selected-geojson') as GeoJSONSource).setData({
-          type: 'FeatureCollection',
-          features: takenFeaturesRef.current,
-        });
+          if (e.originalEvent.ctrlKey) {
+            if (
+              takenFeaturesRef.current.length == 1 &&
+              takenFeaturesRef.current[0].properties!.color != null
+            ) {
+              takenFeaturesRef.current = [];
+            }
+            const filteredFeatures: MapboxGeoJSONFeature[] = [];
+            takenFeaturesRef.current.forEach((_takenFeature) => {
+              if (
+                _availableFeatures[0].properties!.quadkey !=
+                _takenFeature.properties!.quadkey
+              ) {
+                filteredFeatures.push(_takenFeature);
+              }
+            });
+            if (filteredFeatures.length == takenFeaturesRef.current.length) {
+              filteredFeatures.push(_availableFeatures[0]);
+            }
+            takenFeaturesRef.current = filteredFeatures;
+            onSelectedFeaturesChanged(takenFeaturesRef.current);
+          } else {
+            takenFeaturesRef.current = _availableFeatures;
+            onSelectedFeaturesChanged(takenFeaturesRef.current);
+          }
+        }
       }
     });
 
@@ -244,6 +355,9 @@ const MainMap: React.FC = () => {
 
     update();
     _map.on('moveend', update);
+
+    setIsMapLoading(false);
+    setMap(_map);
   };
 
   return (
