@@ -15,6 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
+      <head>
+        <link rel='icon' href='/favicon.png' sizes='any' />
+      </head>
       <body className='flex flex-col min-h-[100vh]'>
         <AuthProvider>
           <Header />
