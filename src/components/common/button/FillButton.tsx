@@ -4,7 +4,7 @@ import clsx from 'clsx';
 interface IProps {
   className?: string;
   children: React.ReactNode;
-  onClick?(): void;
+  onClick?(e?: React.MouseEvent<HTMLDivElement>): void;
 }
 
 const FillButton: React.FC<IProps> = ({ className, onClick, children }) => {
