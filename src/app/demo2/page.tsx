@@ -8,6 +8,7 @@ import {
   collection,
   onSnapshot,
   QuerySnapshot,
+  getDocs,
 } from 'firebase/firestore';
 import { db } from '@/libs/firebase/firebase';
 import { OneEightyRing } from 'react-svg-spinners';
@@ -40,6 +41,7 @@ export default function Demo2Page() {
   const [infoProperty, setInfoProperty] = useState<Property | null>(null);
   const [infoAddress, setInfoAddress] = useState('-');
   const [infoCoords, setInfoCoords] = useState('-');
+  const mapLoadedRef = useRef(false);
   const [panelMode, setPanelMode] = useState('EDIT_MODE');
   const [isColorOpen, setIsColorOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,37 +51,70 @@ export default function Demo2Page() {
   useEffect(() => {
     const q = query(collection(db, 'properties'));
     const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
-      const _propertyFeatures: GeoJSON.FeatureCollection = {
-        type: 'FeatureCollection',
-        features: [],
-      };
-      const _propertyQuadkeys: string[] = [];
-      QuerySnapshot.forEach((doc) => {
-        const _property = doc.data();
-        const _propertyFeature = {
-          type: 'Feature',
-          geometry: tilebelt.tileToGeoJSON(
-            tilebelt.quadkeyToTile(_property.quadkey)
-          ),
-          properties: {
-            quadkey: _property.quadkey,
-            color: _property.color,
-            comment: _property.comment,
-            uidUser: _property.uidUser,
-            displayName: _property.displayName,
-            photoURL: _property.photoURL,
-            createdAt: _property.createdAt.seconds,
-          },
-        } as GeoJSON.Feature<GeoJSON.Geometry>;
-        _propertyFeatures.features.push(_propertyFeature);
-        _propertyQuadkeys.push(_property.quadkey);
-      });
-      setPropertyFeatures(_propertyFeatures);
-      setPropertyQuadkeys(_propertyQuadkeys);
-      console.log(_propertyFeatures);
+      if (mapLoadedRef.current) {
+        const _propertyFeatures: GeoJSON.FeatureCollection = {
+          type: 'FeatureCollection',
+          features: [],
+        };
+        const _propertyQuadkeys: string[] = [];
+        QuerySnapshot.forEach((doc) => {
+          const _property = doc.data();
+          const _propertyFeature = {
+            type: 'Feature',
+            geometry: tilebelt.tileToGeoJSON(
+              tilebelt.quadkeyToTile(_property.quadkey)
+            ),
+            properties: {
+              quadkey: _property.quadkey,
+              color: _property.color,
+              comment: _property.comment,
+              uidUser: _property.uidUser,
+              displayName: _property.displayName,
+              photoURL: _property.photoURL,
+              createdAt: _property.createdAt.seconds,
+            },
+          } as GeoJSON.Feature<GeoJSON.Geometry>;
+          _propertyFeatures.features.push(_propertyFeature);
+          _propertyQuadkeys.push(_property.quadkey);
+        });
+        setPropertyFeatures(_propertyFeatures);
+        setPropertyQuadkeys(_propertyQuadkeys);
+      }
     });
     return unsubscribe;
   }, []);
+
+  const handleOnMapLoaded = async () => {
+    mapLoadedRef.current = true;
+    const docs = await getDocs(query(collection(db, 'properties')));
+    const _propertyFeatures: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [],
+    };
+    const _propertyQuadkeys: string[] = [];
+    docs.forEach((doc) => {
+      const _property = doc.data();
+      const _propertyFeature = {
+        type: 'Feature',
+        geometry: tilebelt.tileToGeoJSON(
+          tilebelt.quadkeyToTile(_property.quadkey)
+        ),
+        properties: {
+          quadkey: _property.quadkey,
+          color: _property.color,
+          comment: _property.comment,
+          uidUser: _property.uidUser,
+          displayName: _property.displayName,
+          photoURL: _property.photoURL,
+          createdAt: _property.createdAt.seconds,
+        },
+      } as GeoJSON.Feature<GeoJSON.Geometry>;
+      _propertyFeatures.features.push(_propertyFeature);
+      _propertyQuadkeys.push(_property.quadkey);
+    });
+    setPropertyFeatures(_propertyFeatures);
+    setPropertyQuadkeys(_propertyQuadkeys);
+  };
 
   const handleOnSelectedFeaturesChanged = async (
     _selectedFeatures: MapboxGeoJSONFeature[]
@@ -169,8 +204,8 @@ export default function Demo2Page() {
                     Selected areas
                   </h4>
                   <div className='h-full max-h-[300px] rounded-lg bg-gray-50 border p-5 overflow-scroll scrollbar-thin scrollbar-thumb-gray-200 scrollbar-thumb-rounded-full'>
-                    {selectedFeatures.map((_feature) => (
-                      <div className='text-base text-gray-600'>
+                    {selectedFeatures.map((_feature, index) => (
+                      <div className='text-base text-gray-600' key={index}>
                         {_feature.properties!.quadkey}
                       </div>
                     ))}
@@ -239,7 +274,7 @@ export default function Demo2Page() {
 
             {panelMode == 'INFO_MODE' && infoProperty && (
               <div className='flex flex-col h-full'>
-                <div className='p-2 flex w-full bg-white drop-shadow'>
+                <div className='flex w-full p-2 bg-white drop-shadow'>
                   <Image
                     width={50}
                     height={50}
@@ -247,60 +282,60 @@ export default function Demo2Page() {
                     alt={infoProperty.displayName}
                     className='rounded-full drop-shadow-md'
                   />
-                  <h3 className='text-lg font-semibold text-gray-600 ml-3 mt-2'>
+                  <h3 className='mt-2 ml-3 text-lg font-semibold text-gray-600'>
                     {infoProperty.displayName}
                   </h3>
                 </div>
-                <div className='p-2 flex flex-col w-full bg-white drop-shadow mt-4'>
+                <div className='flex flex-col w-full p-2 mt-4 bg-white drop-shadow'>
                   <div className='flex flex-col'>
-                    <h3 className='text-base font-semibold text-gray-600 ml-3 mt-2'>
+                    <h3 className='mt-2 ml-3 text-base font-semibold text-gray-600'>
                       Address
                     </h3>
-                    <h3 className='text-sm font-semibold text-gray-600 ml-3 mt-2 break-words line-clamp-1'>
+                    <h3 className='mt-2 ml-3 text-sm font-semibold text-gray-600 break-words line-clamp-1'>
                       {infoAddress}
                     </h3>
                   </div>
                   <div className='flex flex-col mt-1'>
-                    <h3 className='text-base font-semibold text-gray-600 ml-3 mt-2'>
+                    <h3 className='mt-2 ml-3 text-base font-semibold text-gray-600'>
                       Quadkey
                     </h3>
-                    <h3 className='text-sm font-semibold text-gray-600 ml-3 mt-2 break-words line-clamp-1'>
+                    <h3 className='mt-2 ml-3 text-sm font-semibold text-gray-600 break-words line-clamp-1'>
                       {infoProperty.quadkey}
                     </h3>
                   </div>
                   <div className='flex flex-col mt-1'>
-                    <h3 className='text-base font-semibold text-gray-600 ml-3 mt-2'>
+                    <h3 className='mt-2 ml-3 text-base font-semibold text-gray-600'>
                       Coordinates
                     </h3>
-                    <h3 className='text-sm font-semibold text-gray-600 ml-3 mt-2 break-words line-clamp-1'>
+                    <h3 className='mt-2 ml-3 text-sm font-semibold text-gray-600 break-words line-clamp-1'>
                       {infoCoords}
                     </h3>
                   </div>
                 </div>
-                <div className='p-2 flex flex-col w-full bg-white drop-shadow mt-4'>
-                  <div className='flex justify-between items-center'>
-                    <h3 className='text-base font-semibold text-gray-600 ml-3 mt-2'>
+                <div className='flex flex-col w-full p-2 mt-4 bg-white drop-shadow'>
+                  <div className='flex items-center justify-between'>
+                    <h3 className='mt-2 ml-3 text-base font-semibold text-gray-600'>
                       Color
                     </h3>
                     <div
-                      className='w-12 rounded-full h-4 drop-shadow-md'
+                      className='w-12 h-4 rounded-full drop-shadow-md'
                       style={{ background: infoProperty.color }}
                     ></div>
                   </div>
-                  <div className='flex justify-between items-end mt-1 h-full'>
-                    <h3 className='text-base font-semibold text-gray-600 ml-3 mt-2'>
+                  <div className='flex items-end justify-between h-full mt-1'>
+                    <h3 className='mt-2 ml-3 text-base font-semibold text-gray-600'>
                       Register Date
                     </h3>
-                    <h3 className='text-sm font-semibold text-gray-600 ml-3 mt-2 break-words line-clamp-1'>
+                    <h3 className='mt-2 ml-3 text-sm font-semibold text-gray-600 break-words line-clamp-1'>
                       {dayjs(infoProperty.createdAt).format('MMM DD, YYYY')}
                     </h3>
                   </div>
                 </div>
                 <div className='flex flex-col max-h-[300px] mt-1'>
-                  <h3 className='text-base font-semibold text-gray-600 ml-1 mt-2'>
+                  <h3 className='mt-2 ml-1 text-base font-semibold text-gray-600'>
                     Comment :
                   </h3>
-                  <h3 className='text-sm font-medium text-gray-600 ml-1 mt-2 break-words p-2 border rounded-lg overflow-scroll scrollbar-thin scrollbar-thumb-gray-200 scrollbar-thumb-rounded-full'>
+                  <h3 className='p-2 mt-2 ml-1 overflow-scroll text-sm font-medium text-gray-600 break-words border rounded-lg scrollbar-thin scrollbar-thumb-gray-200 scrollbar-thumb-rounded-full'>
                     {infoProperty.comment}
                   </h3>
                 </div>
@@ -311,6 +346,7 @@ export default function Demo2Page() {
         <div className='z-10 w-full p-1 mx-3 bg-white border rounded-lg overflow-clip drop-shadow-md'>
           <MainMap
             onSelectedFeaturesChanged={handleOnSelectedFeaturesChanged}
+            onMapLoaded={handleOnMapLoaded}
             selectedFeatures={selectedFeatures}
             propertyFeatures={propertyFeatures}
             propertyQuadkeys={propertyQuadkeys}

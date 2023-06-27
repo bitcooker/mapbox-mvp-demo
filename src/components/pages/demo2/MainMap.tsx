@@ -13,12 +13,14 @@ import SearchBox from '@/components/common/searchbox/SearchBox';
 
 interface IProps {
   onSelectedFeaturesChanged(selectedFeatures: MapboxGeoJSONFeature[]): void;
+  onMapLoaded(): void;
   selectedFeatures: MapboxGeoJSONFeature[];
   propertyFeatures: GeoJSON.FeatureCollection;
   propertyQuadkeys: string[];
 }
 const MainMap: React.FC<IProps> = ({
   onSelectedFeaturesChanged,
+  onMapLoaded,
   selectedFeatures,
   propertyFeatures,
   propertyQuadkeys,
@@ -46,6 +48,27 @@ const MainMap: React.FC<IProps> = ({
       });
     }
   }, [propertyFeatures]);
+
+  useEffect(() => {
+    if (map != null && propertyQuadkeys.length > 0) {
+      const _features = propertyQuadkeys.map((_quadkey) => {
+        const _coords = tileMath.quadkeyToPoint(_quadkey);
+        return {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [_coords.lng, _coords.lat],
+          },
+          properties: {},
+        } as MapboxGeoJSONFeature;
+      });
+      const clusterData: GeoJSON.FeatureCollection = {
+        type: 'FeatureCollection',
+        features: _features,
+      };
+      (map.getSource('clusters-geojson') as GeoJSONSource).setData(clusterData);
+    }
+  }, [propertyQuadkeys]);
 
   const flyTo = (center: LngLat) => {
     map?.flyTo({ zoom: 11, center });
@@ -201,8 +224,56 @@ const MainMap: React.FC<IProps> = ({
       },
     });
 
+    // Cluster Markers
+    _map.addSource('clusters-geojson', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [],
+      },
+      cluster: true,
+      clusterMaxZoom: 9,
+      clusterRadius: 70,
+    });
+
+    _map.addLayer({
+      id: 'clusters-circle',
+      type: 'circle',
+      filter: ['has', 'point_count'],
+      source: 'clusters-geojson',
+      paint: {
+        'circle-color': '#0682ff',
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-width': 1,
+        'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
+      },
+    });
+
+    _map.addLayer({
+      id: 'clusters-count',
+      type: 'symbol',
+      source: 'clusters-geojson',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}',
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 16,
+      },
+      paint: {
+        'text-color': '#ffffff',
+      },
+    });
+
+    _map.on('mouseenter', 'clusters-circle', () => {
+      _map.getCanvas().style.cursor = 'pointer';
+    });
+    _map.on('mouseleave', 'clusters-circle', () => {
+      _map.getCanvas().style.cursor = '';
+    });
+
     _map.on('mousemove', (e) => {
       if (_map.getZoom() > 9) {
+        _map.getCanvas().style.cursor = 'pointer';
         const _propertyFeatures = _map.queryRenderedFeatures(e.point, {
           layers: ['tiles-properties-shade'],
         });
@@ -250,13 +321,14 @@ const MainMap: React.FC<IProps> = ({
         });
         if (_propertyFeatures.length > 0) {
           takenFeaturesRef.current = _propertyFeatures;
+          console.log(_propertyFeatures);
           onSelectedFeaturesChanged(takenFeaturesRef.current);
         } else {
           const _availableFeatures = _map.queryRenderedFeatures(e.point, {
             layers: ['tiles-shade'],
           });
 
-          if (e.originalEvent.ctrlKey) {
+          if (e.originalEvent.ctrlKey || e.originalEvent.shiftKey) {
             if (
               takenFeaturesRef.current.length == 1 &&
               takenFeaturesRef.current[0].properties!.color != null
@@ -285,8 +357,25 @@ const MainMap: React.FC<IProps> = ({
       }
     });
 
+    _map.on('click', 'clusters-circle', (e) => {
+      const _features = _map.queryRenderedFeatures(e.point, {
+        layers: ['clusters-circle'],
+      });
+      const _clusterId = _features[0].properties!.cluster_id;
+      (
+        _map.getSource('clusters-geojson') as GeoJSONSource
+      ).getClusterExpansionZoom(_clusterId, (err, zoom) => {
+        if (err) return;
+
+        _map.easeTo({
+          center: (_features[0] as any).geometry!.coordinates,
+          zoom: zoom,
+        });
+      });
+    });
+
     const update = () => {
-      if (_map.getZoom() > 10) {
+      if (_map.getZoom() >= 9) {
         _map.getCanvas().style.cursor = 'pointer';
       } else {
         _map.getCanvas().style.cursor = '';
@@ -303,7 +392,7 @@ const MainMap: React.FC<IProps> = ({
           latitude: center.lat,
         });
       } else {
-        // geocoder.setProximity();
+        (_geocoder as any).setProximity();
       }
     }
 
@@ -358,6 +447,7 @@ const MainMap: React.FC<IProps> = ({
 
     setIsMapLoading(false);
     setMap(_map);
+    onMapLoaded();
   };
 
   return (
