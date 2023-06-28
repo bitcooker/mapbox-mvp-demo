@@ -210,6 +210,7 @@ const MainMap: React.FC<IProps> = ({
         'line-width': 1,
         'line-opacity': 0.6,
       },
+      minzoom: 8,
     });
 
     _map.addLayer({
@@ -220,6 +221,7 @@ const MainMap: React.FC<IProps> = ({
         'fill-color': ['get', 'color'],
         'fill-opacity': 0.3,
       },
+      minzoom: 8,
     });
 
     // Cluster Markers
@@ -237,14 +239,28 @@ const MainMap: React.FC<IProps> = ({
     _map.addLayer({
       id: 'clusters-circle',
       type: 'circle',
-      filter: ['has', 'point_count'],
       source: 'clusters-geojson',
+      filter: ['has', 'point_count'],
       paint: {
         'circle-color': '#0682ff',
         'circle-stroke-color': '#ffffff',
         'circle-stroke-width': 1,
         'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
       },
+    });
+
+    _map.addLayer({
+      id: 'unclustered-circle',
+      type: 'circle',
+      source: 'clusters-geojson',
+      filter: ['!', ['has', 'point_count']],
+      paint: {
+        'circle-color': '#0682ff',
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-width': 1,
+        'circle-radius': 6,
+      },
+      maxzoom: 8,
     });
 
     _map.addLayer({
