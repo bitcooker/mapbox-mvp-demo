@@ -18,11 +18,13 @@ export default function RootLayout({
       <head>
         <link rel='icon' href='/favicon.png' sizes='any' />
       </head>
-      <body className='flex flex-col min-h-[100vh]'>
-        <AuthProvider>
-          <Header />
-          {children}
-        </AuthProvider>
+      <body>
+        <div className='flex flex-col h-full'>
+          <AuthProvider>
+            <Header />
+            <div className='grow'>{children}</div>
+          </AuthProvider>
+        </div>
       </body>
     </html>
   );

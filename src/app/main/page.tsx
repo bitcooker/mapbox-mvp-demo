@@ -183,8 +183,8 @@ export default function MainPage() {
 
   return (
     <div className='flex flex-col h-full'>
-      <div className='flex justify-between h-full m-3'>
-        <div className='z-30 w-[30%] flex flex-col h-full bg-white border rounded-lg drop-shadow-md p-2'>
+      <div className='flex flex-col-reverse justify-between h-full m-3 md:flex-row'>
+        <div className='z-30 md:w-[30%] flex flex-col md:h-full bg-white border rounded-lg drop-shadow-md p-2 mt-3 md:mt-0'>
           <div className='p-1'>
             <h1 className='text-xl font-semibold'>
               {panelMode == 'EDIT_MODE'
@@ -237,7 +237,7 @@ export default function MainPage() {
                   <h4 className='mt-4 mb-1 font-medium text-gray-600 text-md'>
                     Comment
                   </h4>
-                  <div className='h-full p-3 overflow-hidden border rounded-lg bg-gray-50'>
+                  <div className='h-full p-3 overflow-hidden border rounded-lg min-h-[200px] bg-gray-50'>
                     <textarea
                       ref={commentRef}
                       className='flex w-full h-full p-2 overflow-scroll text-base text-gray-900 bg-gray-100 border-none rounded-lg outline-none scrollbar-thin scrollbar-thumb-gray-200 scrollbar-thumb-rounded-full scroll-my-2'
@@ -328,11 +328,11 @@ export default function MainPage() {
                     </h3>
                   </div>
                 </div>
-                <div className='flex flex-col max-h-[300px] mt-1'>
+                <div className='flex flex-col h-full mt-1 min-h-[200px]'>
                   <h3 className='mt-2 ml-1 text-base font-semibold text-gray-600'>
                     Comment :
                   </h3>
-                  <h3 className='p-2 mt-2 ml-1 overflow-scroll text-sm font-medium text-gray-600 break-words border rounded-lg scrollbar-thin scrollbar-thumb-gray-200 scrollbar-thumb-rounded-full'>
+                  <h3 className='h-full p-2 mt-2 ml-1 overflow-scroll text-sm font-medium text-gray-600 break-words border rounded-lg grow scrollbar-thin scrollbar-thumb-gray-200 scrollbar-thumb-rounded-full'>
                     {infoProperty.comment}
                   </h3>
                 </div>
@@ -340,7 +340,7 @@ export default function MainPage() {
             )}
           </div>
         </div>
-        <div className='z-10 w-full p-1 mx-3 bg-white border rounded-lg overflow-clip drop-shadow-md'>
+        <div className='z-10 flex flex-col w-full h-[70vh] p-1 bg-white border rounded-lg md:h-full md:mx-3 overflow-clip drop-shadow-md'>
           <MainMap
             onSelectedFeaturesChanged={handleOnSelectedFeaturesChanged}
             onMapLoaded={handleOnMapLoaded}

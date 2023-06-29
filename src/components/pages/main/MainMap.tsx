@@ -463,7 +463,7 @@ const MainMap: React.FC<IProps> = ({
   };
 
   return (
-    <div className='relative w-full h-full overflow-auto rounded-lg'>
+    <div className='relative h-full rounded-lg'>
       {isMapLoading && (
         <div className='absolute flex items-center justify-center w-full h-full'>
           <SixDotsScaleMiddle width={40} height={40} />

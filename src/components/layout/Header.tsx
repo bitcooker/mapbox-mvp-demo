@@ -14,7 +14,7 @@ import MenuIcon from '@/components/common/icons/MenuIcon';
 
 const Header: React.FC = () => {
   return (
-    <div className='z-50 p-2 bg-white border backdrop-blur-lg drop-shadow-sm'>
+    <div className='sticky z-50 p-2 bg-white border backdrop-blur-lg drop-shadow-sm md:position-[none]'                        >
       <div className='flex items-center justify-between item'>
         <Logo />
         <Profile />

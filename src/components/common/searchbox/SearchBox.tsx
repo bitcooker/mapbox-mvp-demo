@@ -132,7 +132,7 @@ const SearchBox: React.FC<IProps> = ({ flyTo }) => {
   };
 
   return (
-    <div className='absolute top-0 left-[50%] translate-x-[-50%] px-4 py-1 bg-white border drop-shadow-sm rounded-full mt-2'>
+    <div className='absolute top-0 left-[50%] translate-x-[-50%] w-[90%] md:w-fit px-4 py-1 bg-white border drop-shadow-sm rounded-full mt-2'>
       <div className='flex items-center justify-between'>
         <BasicButton className='w-8 h-8' onClick={search}>
           <SearchIcon className='stroke-gray-500' />
