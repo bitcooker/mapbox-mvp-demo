@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
-import { auth } from './firebase';
 import { Toaster } from 'react-hot-toast';
+import { auth } from './firebase';
 
 interface AuthContextType {
   user: any | null;

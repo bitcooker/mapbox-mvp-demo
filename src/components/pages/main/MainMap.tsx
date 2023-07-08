@@ -7,8 +7,8 @@ import * as tc from '@mapbox/tile-cover';
 import * as tilebelt from '@mapbox/tilebelt';
 import tileMath from 'quadkey-tilemath';
 import { SixDotsScaleMiddle } from 'react-svg-spinners';
-import MapboxMap from '@/components/common/map/mapbox_map';
-import SearchBox from '@/components/common/searchbox/SearchBox';
+import MapboxMap from '@/components/core/map/MapboxMap';
+import SearchBox from '@/components/core/searchbox/SearchBox';
 
 interface IProps {
   onSelectedFeaturesChanged(selectedFeatures: MapboxGeoJSONFeature[]): void;

@@ -1,16 +1,16 @@
 'use client';
 
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useDetectClickOutside } from 'react-detect-click-outside';
+import { Bars4Icon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/libs/firebase/auth';
 import {
   signInWithGoogleHandler,
   signOutHandler,
 } from '@/libs/firebase/authentication';
 import Button from '@/components/common/button/Button';
-import MenuIcon from '@/components/common/icons/MenuIcon';
 
 const Header: React.FC = () => {
   return (
@@ -59,7 +59,7 @@ const Profile: React.FC = () => {
               {user.displayName}
             </h2>
           ) : (
-            <MenuIcon className='w-5 h-5 mx-5 stroke-gray-600' />
+            <Bars4Icon className='w-5 h-5 mx-5 stroke-gray-600' />
           )}
           <Image
             src={user ? user.photoURL : '/images/user.png'}

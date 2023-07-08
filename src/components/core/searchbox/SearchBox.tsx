@@ -1,17 +1,13 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDetectClickOutside } from 'react-detect-click-outside';
 import tileMath from 'quadkey-tilemath';
 import { debounce } from 'lodash';
 import { LngLat, LngLatLike } from 'mapbox-gl';
-import {
-  getFeaturesFromAddress,
-  getFeaturesFromCoords,
-} from '@/libs/api/mapbox';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { getFeaturesFromAddress, getFeaturesFromCoords } from '@/libs/mapbox';
 import parseCoords from '@/utils/parse_coords';
-import SearchIcon from '@/components/common/icons/SearchIcon';
-import FillButton from '@/components/common/button/FillButton';
-import BasicButton from '@/components/common/button/BasicButton';
+import Button from '@/components/common/button/Button';
 import { SearchResult } from './SearchBox.types';
 
 interface IProps {
@@ -134,9 +130,9 @@ const SearchBox: React.FC<IProps> = ({ flyTo }) => {
   return (
     <div className='absolute top-0 left-[50%] translate-x-[-50%] w-[90%] md:w-fit px-4 py-1 bg-white border drop-shadow-sm rounded-full mt-2'>
       <div className='flex items-center justify-between'>
-        <BasicButton className='w-8 h-8' onClick={search}>
-          <SearchIcon className='stroke-gray-500' />
-        </BasicButton>
+        <Button variant='basic' className='w-8 h-8' onClick={search}>
+          <MagnifyingGlassIcon className='stroke-gray-500' />
+        </Button>
         <input
           type='text'
           value={searchText}
@@ -149,12 +145,13 @@ const SearchBox: React.FC<IProps> = ({ flyTo }) => {
           required
         />
         <span className='bg-gray-300 w-[1px] h-6 mx-2'></span>
-        <FillButton
+        <Button
+          variant='fill'
           className={`w-32 ${isOptionMenuOpen && 'bg-gray-200'}`}
           onClick={() => setIsOptionMenuOpen(!isOptionMenuOpen)}
         >
           {searchOption}
-        </FillButton>
+        </Button>
       </div>
       {isOptionMenuOpen && (
         <div className='absolute bottom-0 right-0 pt-2 pr-4 translate-y-[100%]'>
@@ -162,30 +159,33 @@ const SearchBox: React.FC<IProps> = ({ flyTo }) => {
             ref={optionMenuRef}
             className='p-1 bg-white rounded-md drop-shadow-sm'
           >
-            <FillButton
+            <Button
+              variant='fill'
               className='rounded-none'
               onClick={() => {
                 handleOnSearchOptionSelected('Quadkey');
               }}
             >
               Quadkey
-            </FillButton>
-            <FillButton
+            </Button>
+            <Button
+              variant='fill'
               className='rounded-none'
               onClick={() => {
                 handleOnSearchOptionSelected('Lat/Lng');
               }}
             >
               Lat/Lng
-            </FillButton>
-            <FillButton
+            </Button>
+            <Button
+              variant='fill'
               className='rounded-none'
               onClick={() => {
                 handleOnSearchOptionSelected('Address');
               }}
             >
               Address
-            </FillButton>
+            </Button>
           </div>
         </div>
       )}
@@ -200,14 +200,15 @@ const SearchBox: React.FC<IProps> = ({ flyTo }) => {
             className='p-1 bg-white rounded-md drop-shadow-sm'
           >
             {searchResults.map((_searchResult, index) => (
-              <BasicButton
+              <Button
+                variant='basic'
                 key={index}
                 onClick={() => fly(_searchResult.coords)}
               >
                 <div className='w-full px-1 py-1 text-sm text-gray-500 line-clamp-1'>
                   {_searchResult.text}
                 </div>
-              </BasicButton>
+              </Button>
             ))}
           </div>
         </div>

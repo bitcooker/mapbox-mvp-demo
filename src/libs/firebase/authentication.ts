@@ -1,6 +1,6 @@
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
-import { auth } from './firebase';
 import toast from 'react-hot-toast';
+import { auth } from './firebase';
 
 export const currentUser = () => {
     return onAuthStateChanged(auth, (user) => {
