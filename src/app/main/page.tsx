@@ -16,8 +16,7 @@ import Property from '@/models/Property';
 import { submitProperty } from '@/libs/firebase/property.firestore';
 import { getFeaturesFromCoords } from '@/libs/api/mapbox';
 import MainMap from '@/components/pages/main/MainMap';
-import OutlineButton from '@/components/common/button/OutlineButton';
-import FillButton from '@/components/common/button/FillButton';
+import Button from '@/components/common/button/Button';
 
 export default function MainPage() {
   const [selectedFeatures, setSelectedFeatures] = useState<
@@ -211,7 +210,8 @@ export default function MainPage() {
                     Selected Area Color
                   </h4>
                   <div className='relative w-fit'>
-                    <FillButton
+                    <Button
+                      variant='fill'
                       className='w-20 px-1 border rounded-md bg-gray-50'
                       onClick={handleOnColorButtonClick}
                     >
@@ -219,7 +219,7 @@ export default function MainPage() {
                         className='w-full h-5 bg-white border'
                         style={{ background: color.toString() }}
                       />
-                    </FillButton>
+                    </Button>
                     {isColorOpen && (
                       <div
                         onMouseLeave={() => setIsColorOpen(false)}
@@ -247,7 +247,8 @@ export default function MainPage() {
                 </div>
                 <div className='my-3'>
                   {user ? (
-                    <FillButton
+                    <Button
+                      variant='fill'
                       onClick={handleOnSubmitClick}
                       className='py-2 border rounded-lg'
                     >
@@ -256,14 +257,15 @@ export default function MainPage() {
                       ) : (
                         'Submit'
                       )}
-                    </FillButton>
+                    </Button>
                   ) : (
-                    <OutlineButton
+                    <Button
+                      variant='outline'
                       onClick={handleOnLoginClick}
                       className='text-white bg-gray-900 hover:bg-gray-800'
                     >
                       Login To Submit
-                    </OutlineButton>
+                    </Button>
                   )}
                 </div>
               </div>

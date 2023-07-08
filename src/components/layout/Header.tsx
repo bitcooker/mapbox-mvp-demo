@@ -9,12 +9,12 @@ import {
   signInWithGoogleHandler,
   signOutHandler,
 } from '@/libs/firebase/authentication';
-import FillButton from '@/components/common/button/FillButton';
+import Button from '@/components/common/button/Button';
 import MenuIcon from '@/components/common/icons/MenuIcon';
 
 const Header: React.FC = () => {
   return (
-    <div className='sticky z-50 p-2 bg-white border backdrop-blur-lg drop-shadow-sm md:position-[none]'                        >
+    <div className='sticky z-50 p-2 bg-white border backdrop-blur-lg drop-shadow-sm md:position-[none]'>
       <div className='flex items-center justify-between item'>
         <Logo />
         <Profile />
@@ -75,9 +75,13 @@ const Profile: React.FC = () => {
           ref={profileMenuRef}
           className='absolute -bottom-2 right-0 py-2 bg-white drop-shadow-sm border rounded-md translate-y-[100%] w-48 mr-1'
         >
-          <FillButton className='rounded-none' onClick={handleAuthButtonClick}>
+          <Button
+            variant='fill'
+            className='rounded-none'
+            onClick={handleAuthButtonClick}
+          >
             {user ? 'Logout' : 'Login'}
-          </FillButton>
+          </Button>
         </div>
       )}
     </div>
